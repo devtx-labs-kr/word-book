@@ -1,0 +1,131 @@
+import com.github.gradle.node.npm.task.NpmTask
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.github.node-gradle.node' version '7.0.2'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+group = 'com.wordbook'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// ---------------------------------------------------------------------------
+// Source layout: the Java backend lives under backend/ because the workspace
+// root src/ holds the original Swift app (reference only, never built).
+// ---------------------------------------------------------------------------
+sourceSets {
+    main {
+        java { srcDirs = ['backend/src/main/java'] }
+        resources { srcDirs = ['backend/src/main/resources'] }
+    }
+    test {
+        java { srcDirs = ['backend/src/test/java'] }
+        resources { srcDirs = ['backend/src/test/resources'] }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// ---------------------------------------------------------------------------
+// Frontend integration (node-gradle). Uses the system Node (download=false).
+// Task dependency direction (cicd-pipeline §1 — the single-jar topology):
+//   bootJar -> copyFrontend -> viteBuild -> {lintFrontend, npmInstall}
+// Reversing this leaves the React build out of the jar.
+// ---------------------------------------------------------------------------
+node {
+    download = false
+    nodeProjectDir = file("${projectDir}/frontend")
+}
+
+tasks.register('lintFrontend', NpmTask) {
+    dependsOn 'npmInstall'
+    args = ['run', 'lint']
+    workingDir = file("${projectDir}/frontend")
+    inputs.dir("${projectDir}/frontend/src")
+    inputs.files("${projectDir}/frontend/package.json", "${projectDir}/frontend/.eslintrc.cjs")
+}
+
+tasks.register('viteBuild', NpmTask) {
+    dependsOn 'lintFrontend', 'npmInstall'
+    args = ['run', 'build']
+    workingDir = file("${projectDir}/frontend")
+    inputs.dir("${projectDir}/frontend/src")
+    inputs.files("${projectDir}/frontend/package.json", "${projectDir}/frontend/vite.config.ts")
+    outputs.dir("${projectDir}/frontend/dist")
+}
+
+// Frontend unit tests (vitest, run-once via `npm run test` = `vitest run`, NOT watch). Wired into
+// `check` below so the single local build gate (`./gradlew build`) enforces the frontend suite too
+// (team.md: "외부 CI 없음 — 로컬 빌드 기준"). Without this the vitest suite would bypass the gate.
+tasks.register('testFrontend', NpmTask) {
+    dependsOn 'npmInstall'
+    args = ['run', 'test']
+    workingDir = file("${projectDir}/frontend")
+    inputs.dir("${projectDir}/frontend/src")
+    inputs.files("${projectDir}/frontend/package.json", "${projectDir}/frontend/vite.config.ts")
+}
+
+// `check` (and therefore `build`) runs the frontend tests alongside the backend `test` task.
+tasks.named('check') {
+    dependsOn 'testFrontend'
+}
+
+// The frontend build output is folded into processResources so there is a single
+// producer of build/resources/main (= BOOT-INF/classes). This guarantees the React
+// bundle lands in the jar's static resources without task-ordering conflicts.
+// Dependency direction (cicd-pipeline §1): bootJar -> copyFrontend -> viteBuild -> {lintFrontend, npmInstall}.
+tasks.named('processResources') {
+    dependsOn 'viteBuild'
+    from("${projectDir}/frontend/dist") {
+        into 'static'
+    }
+}
+
+// Named lifecycle task kept for traceability with the build plan; the actual copy
+// happens in processResources (above).
+tasks.register('copyFrontend') {
+    dependsOn 'processResources'
+}
+
+tasks.named('bootJar') {
+    dependsOn 'copyFrontend'
+    archiveFileName = 'wordbook.jar'
+}
+
+// ---------------------------------------------------------------------------
+// Backend formatting (Spotless / google-java-format). Part of `check`.
+// ---------------------------------------------------------------------------
+spotless {
+    java {
+        target 'backend/src/**/*.java'
+        googleJavaFormat('1.22.0')
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

@@ -1,0 +1,1342 @@
+:root {
+  /* --- Design tokens (light theme) --- */
+  --bg: #ececec;
+  --surface: #ffffff;
+  --accent: #007aff;
+  --accent-hover: #0066d6;
+  --text: #1c1c1e;
+  --text-secondary: #6c6c70;
+  --border: #e0e0e0;
+
+  /* semantic */
+  --danger: #ff3b30;
+  --warning: #ff9500;
+  --success: #34c759;
+  --purple: #af52de; /* one-off accent for "Total Cards" (U4 Statistics, Figma node 5:2) */
+
+  /* radii */
+  --radius-input: 8px;
+  --radius-button: 8px;
+  --radius-card: 16px;
+  --radius-flashcard: 20px;
+  --radius-badge: 10px;
+
+  /* shadows */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-flashcard: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+  /* legacy aliases (kept so any stray reference still resolves) */
+  --color-accent: var(--accent);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-border: var(--border);
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   Reusable primitives
+   ========================================================= */
+.btn-primary,
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-button);
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.btn-primary:hover,
+button:hover {
+  background: var(--accent-hover);
+}
+
+button:disabled,
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background: var(--accent);
+}
+
+.btn-secondary,
+.button-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover,
+.button-secondary:hover {
+  background: #f5f5f5;
+}
+
+.button-danger {
+  background: var(--danger);
+}
+
+.button-danger:hover {
+  background: #e0322a;
+}
+
+.button-icon {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  font-size: 18px;
+}
+
+.button-icon:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.button-link {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  font-weight: 500;
+}
+
+.button-link:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.input,
+input,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+}
+
+input:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 14px 16px;
+}
+
+.error {
+  color: var(--danger);
+  margin-top: 8px;
+}
+
+.muted {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================================
+   Global shell — TopBar + Sidebar + body
+   ========================================================= */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-brand {
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.theme-toggle {
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 8px;
+}
+
+.theme-toggle:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 16px 12px 24px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.app-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-link {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.nav-link:hover {
+  background: #f5f5f5;
+}
+
+.nav-link.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav-link.active:hover {
+  background: var(--accent);
+}
+
+.nav-link.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nav-link.disabled:hover {
+  background: transparent;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  background: var(--bg);
+}
+
+/* =========================================================
+   Page header + toolbar
+   ========================================================= */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toolbar input[type='search'] {
+  flex: 1 1 auto;
+  min-width: 200px;
+}
+
+.toolbar select {
+  flex: 0 0 auto;
+  width: auto;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* =========================================================
+   Deck list + deck cards
+   ========================================================= */
+.deck-grid,
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.deck-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 14px 16px;
+}
+
+.deck-card-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.deck-color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.deck-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.deck-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.deck-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.deck-meta-sep {
+  margin: 0 2px;
+}
+
+.deck-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.deck-due-badge {
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: var(--radius-badge);
+  padding: 3px 8px;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  z-index: 5;
+  min-width: 120px;
+}
+
+.menu button {
+  background: transparent;
+  color: var(--text);
+  width: 100%;
+  text-align: left;
+  font-weight: 500;
+}
+
+.menu button:hover {
+  background: #f5f5f5;
+}
+
+.menu .menu-danger {
+  color: var(--danger);
+}
+
+/* Generic pill (deck/card states) */
+.pill {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   Card rows (card management)
+   ========================================================= */
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  padding: 10px 14px;
+}
+
+.card-state-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--border);
+}
+
+.card-state-dot.state-new {
+  background: var(--accent);
+}
+.card-state-dot.state-learning,
+.card-state-dot.state-relearning {
+  background: var(--warning);
+}
+.card-state-dot.state-mastered {
+  background: var(--success);
+}
+
+.card-row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-front {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-back {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-pronunciation {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.card-row .pill {
+  border-radius: 19px;
+  font-weight: 500;
+}
+
+.card-row .pill.state-new {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.card-row .pill.state-learning,
+.card-row .pill.state-relearning {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+.card-row .pill.state-mastered {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.card-row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* =========================================================
+   Filter tabs
+   ========================================================= */
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.filter-tab:hover {
+  background: #f5f5f5;
+}
+
+.filter-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.filter-tab.active:hover {
+  background: var(--accent);
+}
+
+/* =========================================================
+   Modals
+   ========================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-flashcard);
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+}
+
+.modal h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin: -4px 0 12px;
+}
+
+.color-palette {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-palette legend {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+}
+
+.color-swatch.selected {
+  border-color: var(--text);
+}
+
+/* import / export specifics */
+.export-summary {
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.export-summary code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.import-preview-ok {
+  margin-top: 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.import-preview-ok .muted {
+  color: var(--warning);
+}
+
+/* =========================================================
+   Empty state
+   ========================================================= */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 40px;
+}
+
+.empty-state-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* =========================================================
+   Toast
+   ========================================================= */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+/* Error variant of the global toast (SettingsProvider surfaces context `error`, BR-S12). */
+.toast-error {
+  background: var(--danger, #d70015);
+}
+
+/* =========================================================
+   Study session (full-screen)
+   ========================================================= */
+.study-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 16px;
+  background: var(--bg);
+}
+
+.study-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.study-deck-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.progress-text {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.progress-remaining {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.progress-bar {
+  display: block;
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: calc(var(--progress, 0) * 100%);
+  background: var(--accent);
+}
+
+.progress-percent {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.study-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.flashcard {
+  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius-flashcard);
+  box-shadow: var(--shadow-flashcard);
+  padding: 24px 28px;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flashcard-inner {
+  width: 100%;
+}
+
+.flashcard-face {
+  display: flex;
+  flex-direction: column;
+}
+
+.flashcard-front {
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.flashcard-back {
+  align-items: flex-start;
+  text-align: left;
+  gap: 10px;
+}
+
+.flashcard-back-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.flashcard-front .flashcard-word {
+  font-size: clamp(36px, 8vw, 56px);
+  font-weight: 700;
+  margin: 0;
+}
+
+.flashcard-back .flashcard-word {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.flashcard-pronunciation {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin: 0;
+}
+
+.flashcard-reveal {
+  margin-top: 8px;
+  width: 220px;
+  max-width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.flashcard-definition {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+}
+
+.flashcard-back::before {
+  content: '';
+  display: none;
+}
+
+.flashcard-example,
+.flashcard-notes {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.flashcard-example {
+  font-size: 14px;
+}
+
+.flashcard-notes {
+  font-size: 13px;
+}
+
+.flashcard-dict {
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0;
+}
+
+.flashcard-dict:hover {
+  background: transparent;
+  text-decoration: underline;
+}
+
+.flashcard-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 4px 0;
+}
+
+.flashcard-stats {
+  display: flex;
+  gap: 16px;
+  margin: 4px 0 0;
+}
+
+.flashcard-stats dt {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.flashcard-stats dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Rating buttons */
+.rating-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.rating-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 13px;
+  border-radius: var(--radius-button);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.rating-button:hover {
+  opacity: 0.9;
+}
+
+.rating-again {
+  background: var(--danger);
+}
+.rating-again:hover {
+  background: var(--danger);
+}
+.rating-hard {
+  background: var(--warning);
+}
+.rating-hard:hover {
+  background: var(--warning);
+}
+.rating-good {
+  background: var(--accent);
+}
+.rating-good:hover {
+  background: var(--accent);
+}
+.rating-easy {
+  background: var(--success);
+}
+.rating-easy:hover {
+  background: var(--success);
+}
+
+.rating-button:disabled:hover {
+  opacity: 0.4;
+}
+
+.rating-key {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Study complete */
+.study-complete {
+  max-width: 480px;
+  margin: 48px auto;
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.study-complete h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.summary-stats dt {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.summary-stats dd {
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.study-complete-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Responsive (NFR-7, target desktop 1024px; collapse <=768px)
+   ========================================================= */
+@media (max-width: 768px) {
+  .app-body {
+    flex-direction: column;
+  }
+  .app-sidebar {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .app-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .app-main {
+    padding: 20px 16px;
+  }
+  .card-row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .rating-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================
+   Dark theme (U6) — token override only. Components reference
+   the token vars, so they adapt automatically (frontend-components §8).
+   Values from design-system-mapping, mapped onto the existing token names.
+   ========================================================= */
+[data-theme='dark'] {
+  --bg: #1c1c1e;
+  --surface: #2c2c2e;
+  --accent: #0a84ff;
+  --accent-hover: #0a84ff;
+  --text: #f2f2f7;
+  --text-secondary: #98989d;
+  --border: #38383a;
+
+  --danger: #ff453a;
+  --warning: #ff9f0a;
+  --success: #30d158;
+  --purple: #bf5af2; /* dark-mode "Total Cards" accent (U4) */
+}
+
+/* Hover surfaces that hardcode a light grey need a dark equivalent. */
+[data-theme='dark'] .btn-secondary:hover,
+[data-theme='dark'] .button-secondary:hover,
+[data-theme='dark'] .nav-link:hover,
+[data-theme='dark'] .filter-tab:hover,
+[data-theme='dark'] .menu button:hover {
+  background: #3a3a3c;
+}
+
+/* =========================================================
+   Settings page (U6)
+   ========================================================= */
+.settings-page {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 640px;
+}
+
+.settings-page h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 6px 0 0;
+}
+
+.settings-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  padding: 14px 16px;
+}
+
+.settings-card-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Editable number input styled like the Figma value pill. */
+.settings-value-input {
+  width: 90px;
+  flex: 0 0 auto;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+.settings-about-value {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.settings-about-caption {
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.settings-save {
+  align-self: flex-start;
+}
+
+/* =========================================================
+   Accessible toggle switch (U6, role="switch")
+   ========================================================= */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.toggle-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.toggle-description {
+  font-size: 12px;
+}
+
+.toggle-switch {
+  flex: 0 0 auto;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s ease;
+}
+
+.toggle-switch:hover {
+  background: var(--border);
+}
+
+.toggle-switch.on,
+.toggle-switch.on:hover {
+  background: var(--accent);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.toggle-switch.on .toggle-knob {
+  transform: translateX(18px);
+}
+
+.toggle-switch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Statistics page (U4) — token-only, dark-adaptive
+   (frontend-components §6/§7, Figma node 5:2)
+   ========================================================= */
+.stats-page {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stats-page h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stats-section h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Cards wrap to fewer columns on narrow widths (≥360px), no horizontal scroll (NFR-7). */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-card-icon {
+  font-size: 18px;
+}
+
+.stat-card-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stats-upcoming {
+  font-size: 13px;
+}
+
+.session-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.session-dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.session-deck {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.session-meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-secondary);
+}

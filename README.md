@@ -1,8 +1,8 @@
 # WordBook Web
 
 A local flashcard app with SM-2 spaced repetition. Brownfield rewrite of the original Swift macOS
-app (kept under `src/` for reference only) as **Java 17 + Spring Boot + React (Vite, TypeScript)**,
-packaged as a single local `java -jar` artifact.
+app as **Java 17 + Spring Boot + React (Vite, TypeScript)**, packaged as a single local `java -jar`
+artifact. The Swift original is not part of this copy.
 
 > Status: **U1 — Foundation & Walking Skeleton**. The minimal end-to-end slice (create deck → add
 > card → start study → answer one card → SRS fields update) is implemented. Full CRUD, search,
@@ -20,11 +20,13 @@ packaged as a single local `java -jar` artifact.
 ```
 
 This single command lint-and-builds the React frontend (ESLint + Prettier → `vite build`), folds
-the bundle into the Spring Boot static resources, compiles the backend, runs all tests (JUnit
-backend + the SM-2 golden tests), checks formatting (Spotless / google-java-format), and produces
-the executable jar at `build/libs/wordbook.jar` with the frontend embedded.
+the bundle into the Spring Boot static resources, compiles the backend, runs **both** test suites —
+the JUnit backend suite including the SM-2 golden tests, and the frontend vitest suite, which is
+wired into `check` so it cannot bypass the build gate — checks formatting (Spotless /
+google-java-format), and produces the executable jar at `build/libs/wordbook.jar` with the frontend
+embedded.
 
-Frontend unit tests (vitest) run from the `frontend/` directory:
+To run only the frontend unit tests, from the `frontend/` directory:
 
 ```bash
 cd frontend && npm test
@@ -56,7 +58,6 @@ build.gradle / settings.gradle    Root Gradle build (Spring Boot + node-gradle +
 backend/src/main/java             Spring Boot application (Java 17)
 backend/src/test/java             JUnit tests incl. the SM-2 golden suite
 frontend/                         React + Vite + TypeScript SPA
-src/                              Original Swift app — REFERENCE ONLY, not built
 ```
 
 ## SM-2 fidelity
